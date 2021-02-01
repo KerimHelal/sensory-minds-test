@@ -62,7 +62,7 @@ export const Pokemons = [
     {
         name: 'Pokeballs',
         image: './images/pokemons/pokeballs.svg',
-        checked: true
+        checked: false
     },
     {
         name: 'Venonat',

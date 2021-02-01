@@ -3,6 +3,7 @@ html, body {
   background: linear-gradient(to bottom right,#024,#402);
   color: white;
   text-align: center;
+  overflow-y: hidden;
 }
 
 .App-logo {

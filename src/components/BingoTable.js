@@ -1,31 +1,28 @@
 import React from "react";
 import { Pokemons } from '../data/Pokemons';
-
+import { shuffle } from '../utilities/helpers';
 
 const BingoTable = () => {
 
-  const [pokemonsArray, setPokemonsArray] = React.useState(Pokemons);
+  const [pokemonsArray, setPokemonsArray] = React.useState(shuffle(Pokemons));
   const [checkedArray, setCheckedArray] = React.useState([12]);
-  const [rightDiagonalChecked, setRightDiagonalChecked] = React.useState(false);
-  const [leftDiagonalChecked, setLeftDiagonalChecked] = React.useState(false);
-  /*const [renderAnimatedPokemons, setRenderAnimatedPokemons] = React.useState(false);*/
-
+  const [renderAnimatedPokemons, setRenderAnimatedPokemons] = React.useState(false);
   const indexes = [0,1,2,3,4];
 
-  /*React.useEffect(() => {
+  React.useEffect(() => {
     if(checkForBingo()) {
         setRenderAnimatedPokemons(true);
     }
-  },[checkedArray]);*/
+  },[checkedArray]);
 
   const renderTable = () => {
     return pokemonsArray.map((pokemon, i) => {
         return (
             <button 
             onClick={() => selectPokemon(i)}
-            className={pokemon.checked ? 'active pokemon-btn' : 'pokemon-btn'}
+            className={pokemon.checked || i === 12 ? 'active pokemon-btn' : 'pokemon-btn'}
             key={i}
-            disabled={pokemon.checked}
+            disabled={pokemon.checked || i === 12}
             >
                 <img className="pokemon-img" src={pokemon.image} alt="pokemon-img"/>
             </button>
@@ -41,6 +38,7 @@ const BingoTable = () => {
   }
 
   const selectPokemon = (i) => {
+    setRenderAnimatedPokemons(false);
     const pokemons = [...pokemonsArray];
     const checkedPokemons = [...checkedArray];
     pokemons[i].checked = true;
@@ -57,34 +55,21 @@ const BingoTable = () => {
     return indexes.every(row => checkedArray.includes(row * 5 + column));
   }
 
-  const checkLeftDiagonal = () => {
-    if(!leftDiagonalChecked) {  
-        const checked = indexes.every(index => checkedArray.includes(index * 5 + index));
-        if(checked) {
-          console.log('checked')
-            setLeftDiagonalChecked(true);
-            return true;
-        }
-    } 
+  const checkLeftDiagonal = (index) => {
+    if (index % 6 === 0 || index === 0) return indexes.every(index => checkedArray.includes(index * 5 + index));
     return false;
   }
 
-  const checkRightDiagonal = () => {
-    if(!rightDiagonalChecked) {  
-        const checked = indexes.every(index => checkedArray.includes(index * 5 + 4 - index));
-        if(checked) {
-            setRightDiagonalChecked(true);
-            return true;
-        }
-    } 
+  const checkRightDiagonal = (index) => {
+    console.log(index % 4)
+    if (index % 4 === 0) return indexes.every(index => checkedArray.includes(index * 5 + 4 - index));
     return false;
   }
 
   const checkForBingo = () => {
     const index = checkedArray[checkedArray.length - 1];
     const position = getRowAndColumn(index);
-    console.log(checkRightDiagonal())
-    return checkRow(position.row) || checkColumn(position.column) || checkRightDiagonal() || checkLeftDiagonal();
+    return checkRow(position.row) || checkColumn(position.column) || checkRightDiagonal(index) || checkLeftDiagonal(index);
   }
 
   const renderWinAnimation = () => {
@@ -110,7 +95,7 @@ const BingoTable = () => {
         <div className="pokemon-grid">
             {renderTable()}
         </div>
-        {checkForBingo() && renderWinAnimation()}
+        {renderAnimatedPokemons && renderWinAnimation()}
     </>
   );
 }
