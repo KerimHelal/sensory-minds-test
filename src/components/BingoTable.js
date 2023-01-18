@@ -1,49 +1,51 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Pokemons } from '../data/Pokemons';
 import { shuffle } from '../utilities/helpers';
+import { Row } from 'react-bootstrap';
+
 
 const BingoTable = () => {
-
-  const [pokemonsArray, setPokemonsArray] = React.useState(shuffle(Pokemons));
+  const [pokemonsArray, setPokemonsArray] = React.useState([]);
   const [checkedArray, setCheckedArray] = React.useState([12]);
   const [renderAnimatedPokemons, setRenderAnimatedPokemons] = React.useState(false);
-  const indexes = [0,1,2,3,4];
+  const indexes = [0, 1, 2, 3, 4];
 
-  React.useEffect(() => {
-    if(checkForBingo()) {
-        setRenderAnimatedPokemons(true);
+  useEffect(() => {
+    if (checkForBingo()) {
+      setRenderAnimatedPokemons(true);
     }
-  },[checkedArray]);
+  }, [checkedArray]);
+
+  useEffect(() => {
+    setPokemonsArray(shuffle(Pokemons));
+  }, [])
 
   const renderTable = () => {
     return pokemonsArray.map((pokemon, i) => {
-        return (
-            <button 
-            onClick={() => selectPokemon(i)}
-            className={pokemon.checked || i === 12 ? 'active pokemon-btn' : 'pokemon-btn'}
-            key={i}
-            disabled={pokemon.checked || i === 12}
-            >
-                <img className="pokemon-img" src={pokemon.image} alt="pokemon-img"/>
-            </button>
-        )
+      return (
+        <button
+          onClick={() => selectPokemon(i)}
+          className={checkedArray.includes(i) ? 'active pokemon-btn' : 'pokemon-btn'}
+          key={i}
+          disabled={checkedArray.includes(i)}
+        >
+          <img className="pokemon-img" src={pokemon.image} alt="pokemon-img" />
+        </button>
+      )
     });
   }
 
   const getRowAndColumn = (index) => {
     return {
-        row: parseInt(index /5),
-        column: index % 5
+      row: parseInt(index / 5),
+      column: index % 5
     }
   }
 
   const selectPokemon = (i) => {
     setRenderAnimatedPokemons(false);
-    const pokemons = [...pokemonsArray];
     const checkedPokemons = [...checkedArray];
-    pokemons[i].checked = true;
     checkedPokemons.push(i);
-    setPokemonsArray(pokemons);
     setCheckedArray(checkedPokemons);
   }
 
@@ -61,7 +63,6 @@ const BingoTable = () => {
   }
 
   const checkRightDiagonal = (index) => {
-    console.log(index % 4)
     if (index % 4 === 0) return indexes.every(index => checkedArray.includes(index * 5 + 4 - index));
     return false;
   }
@@ -72,30 +73,46 @@ const BingoTable = () => {
     return checkRow(position.row) || checkColumn(position.column) || checkRightDiagonal(index) || checkLeftDiagonal(index);
   }
 
+  const resetPokemons = () => {
+    setCheckedArray([12]);
+    setPokemonsArray(shuffle(Pokemons));
+  }
+
   const renderWinAnimation = () => {
     return (
-        <>
-            <img className="pokemon0" src="./images/pokemon1.png" alt="pokemon-ball" width={80} />
-            <img className="pokemon1" src="./images/pokemon2.png" alt="pokemon-ball" width={80} />
-            <img className="pokemon2" src="./images/pokemon3.png" alt="pokemon-ball" width={80} />
-            <img className="pokemon3" src="./images/pokemon4.png" alt="pokemon-ball" width={80} />
-            <img className="pokemon4" src="./images/pokemon5.png" alt="pokemon-ball" width={80} />
-            <img className="pokemon5" src="./images/pokemon6.png" alt="pokemon-ball" width={80} />
-            <img className="pokemon6" src="./images/pokemon1.png" alt="pokemon-ball" width={80} />
-            <img className="pokemon7" src="./images/pokemon2.png" alt="pokemon-ball" width={80} />
-            <img className="pokemon8" src="./images/pokemon3.png" alt="pokemon-ball" width={80} />
-        </>
+      <>
+        <img className="pokemon0" src="./images/pokemon1.png" alt="pokemon-ball" width={80} />
+        <img className="pokemon1" src="./images/pokemon2.png" alt="pokemon-ball" width={80} />
+        <img className="pokemon2" src="./images/pokemon3.png" alt="pokemon-ball" width={80} />
+        <img className="pokemon3" src="./images/pokemon4.png" alt="pokemon-ball" width={80} />
+        <img className="pokemon4" src="./images/pokemon5.png" alt="pokemon-ball" width={80} />
+        <img className="pokemon5" src="./images/pokemon6.png" alt="pokemon-ball" width={80} />
+        <img className="pokemon6" src="./images/pokemon1.png" alt="pokemon-ball" width={80} />
+        <img className="pokemon7" src="./images/pokemon2.png" alt="pokemon-ball" width={80} />
+        <img className="pokemon8" src="./images/pokemon3.png" alt="pokemon-ball" width={80} />
+      </>
     );
   }
 
-  
+
 
   return (
     <>
+      <Row className="justify-content-center">
+
         <div className="pokemon-grid">
-            {renderTable()}
+          {renderTable()}
         </div>
-        {renderAnimatedPokemons && renderWinAnimation()}
+      </Row>
+      <Row className="justify-content-center">
+        <button
+          onClick={() => resetPokemons()}
+          className={'reset-btn'}
+        >
+          Reset
+        </button>
+      </Row>
+      {renderAnimatedPokemons && renderWinAnimation()}
     </>
   );
 }
