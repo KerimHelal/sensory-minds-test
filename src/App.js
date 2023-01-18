@@ -9,9 +9,7 @@ function App() {
       <Row className="justify-content-center">
         <img src="/images/logo" className="App-logo" alt="logo" />
       </Row>
-      <Row className="justify-content-center">
-        <BingoTable />
-      </Row>
+      <BingoTable />
     </Container>
   );
 }
